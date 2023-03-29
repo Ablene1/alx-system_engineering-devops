@@ -3,7 +3,7 @@
 #
 # variables
 path="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
-filename=$(basename "$some_page.html")
+filename=$(basename "some_page.html")
 brown='\e[0;33m'
 reset='\033[0m'
 file="$1"
