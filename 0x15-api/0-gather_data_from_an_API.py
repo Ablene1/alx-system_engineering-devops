@@ -1,43 +1,39 @@
 #!/usr/bin/python3
 """
-Using https://jsonplaceholder.typicode.com
-returns info about employee TODO progress
-
-This script need some more thinking...for later
-
+Module 0-gather_data_from_an_API
+Using "https://jsonplaceholder.typicode.com/"
+Returns information about his/her TODO list progress
 """
 import requests
 from sys import argv
 
 
-def request_data():
-    """Requests employees data and TODO"""
-    employees = requests.get("https://jsonplaceholder.typicode.com/users")
+def gather_data():
+    """Fetches data of employees and their todo tasks"""
+    users_url = "https://jsonplaceholder.typicode.com/users"
+    users = requests.get(users_url)
     EMPLOYEE_NAME = ""
-    for employee in employees.json():
-        if employee.get("id") == int(argv[1]):
-            EMPLOYEE_NAME = employee.get("name")
+    for i in users.json():
+        if i.get("id") == int(argv[1]):
+            EMPLOYEE_NAME = i.get("name")
             break
     NUMBER_OF_DONE_TASKS = 0
     TOTAL_NUMBER_OF_TASKS = 0
     TASK_TITLE = []
 
-    tasks = requests.get("https://jsonplaceholder.typicode.com/todos")
-    for task in tasks.json():
-        if task.get("userId") == int(argv[1]):
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
+    todos = requests.get(todos_url)
+    for tasks in todos.json():
+        if tasks.get("userId") == int(argv[1]):
             TOTAL_NUMBER_OF_TASKS += 1
-            if task.get("completed") is True:
+            if tasks.get("completed") is True:
                 NUMBER_OF_DONE_TASKS += 1
-                TASK_TITLE.append(task.get("title"))
-
-    print(
-        f"Employee {EMPLOYEE_NAME} is done with"
-        f" {NUMBER_OF_DONE_TASKS}/{TOTAL_NUMBER_OF_TASKS}:"
-        )
-
+                TASK_TITLE.append(tasks.get("title"))
+    print("Employee {} is done with tasks({}/{}):".format(
+        EMPLOYEE_NAME, NUMBER_OF_DONE_TASKS, TOTAL_NUMBER_OF_TASKS))
     for task in TASK_TITLE:
-        print(f"\t {task}")
+        print("\t {}".format(task))
 
 
 if __name__ == "__main__":
-    request_data()
+    gather_data()
