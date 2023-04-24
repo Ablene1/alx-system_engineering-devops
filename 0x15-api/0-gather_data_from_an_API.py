@@ -1,31 +1,39 @@
 #!/usr/bin/python3
 """
-Return information for a given employee about his/her TODO list progress
+Module 0-gather_data_from_an_API
+Using "https://jsonplaceholder.typicode.com/"
+Returns information about his/her TODO list progress
 """
+import requests
+from sys import argv
+
+
+def gather_data():
+    """Fetches data of employees and their todo tasks"""
+    users_url = "https://jsonplaceholder.typicode.com/users"
+    users = requests.get(users_url)
+    EMPLOYEE_NAME = ""
+    for i in users.json():
+        if i.get("id") == int(argv[1]):
+            EMPLOYEE_NAME = i.get("name")
+            break
+    NUMBER_OF_DONE_TASKS = 0
+    TOTAL_NUMBER_OF_TASKS = 0
+    TASK_TITLE = []
+
+    todos_url = "https://jsonplaceholder.typicode.com/todos"
+    todos = requests.get(todos_url)
+    for tasks in todos.json():
+        if tasks.get("userId") == int(argv[1]):
+            TOTAL_NUMBER_OF_TASKS += 1
+            if tasks.get("completed") is True:
+                NUMBER_OF_DONE_TASKS += 1
+                TASK_TITLE.append(tasks.get("title"))
+    print("Employee {} is done with tasks({}/{}):".format(
+        EMPLOYEE_NAME, NUMBER_OF_DONE_TASKS, TOTAL_NUMBER_OF_TASKS))
+    for task in TASK_TITLE:
+        print("\t {}".format(task))
+
+
 if __name__ == "__main__":
-    import requests
-    import sys
-
-    DONE_TASKS = 0
-    ALL_TASKS = 0
-
-    URL_FOR_USERS = 'https://jsonplaceholder.typicode.com/users/{0}'.\
-        format(sys.argv[1])
-    URL_FOR_TODOS = 'https://jsonplaceholder.typicode.com/todos'
-    r_for_users = requests.get(URL_FOR_USERS)
-    r_for_todos = requests.get(URL_FOR_TODOS)
-
-    name = r_for_users.json().get('name')
-    todos = r_for_todos.json()
-    for todo in todos:
-        if todo.get('userId') == int(sys.argv[1]):
-            ALL_TASKS += 1
-        if (todo.get('userId') == int(sys.argv[1]))\
-                and (todo.get('completed')):
-            DONE_TASKS += 1
-    print("Employee {} is done with tasks({}/{}):".
-          format(name, DONE_TASKS, ALL_TASKS))
-    for todo in todos:
-        if (todo.get('userId') == int(sys.argv[1]))\
-                and (todo.get('completed')):
-            print("	 {}".format(todo.get('title')))
+    gather_data()
