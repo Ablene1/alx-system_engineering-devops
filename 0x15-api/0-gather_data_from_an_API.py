@@ -1,12 +1,23 @@
 #!/usr/bin/python3
-"""Returns to-do list information for a given employee ID."""
-import requests
-import sys
-if __name__ == "__main__":
+# using this REST API, for a given employee ID,
+# returns information about his/her TODO list progress.
+from requests import get
+from sys import argv
+
+
+def get_data_api(user_id):
+    done = []
     url = "https://jsonplaceholder.typicode.com/"
-    user = requests.get(url + "users/{}".format(sys.argv[1])).json()
-    todos = requests.get(url + "todos", params={"userId": sys.argv[1]}).json()
-    finished = [t.get('title') for t in todos if t.get('completed') is True]
-    print("Employee {} is done with tasks({}/{}):".format(
-        user.get("name"), len(finished), len(todos)))
-    [print("\t {}".format(c)) for c in finished]
+    user = get(url + "users/{}".format(user_id)).json()
+    tasks = get(url + "todos?userId={}".format(user_id)).json()
+    for task in tasks:
+        if task.get("completed"):
+            done.append(task.get("title"))
+    print("Employee {} is done with tasks({}/{}):"
+          .format(user["name"], len(done), len(tasks)))
+    for task in done:
+        print("\t {}".format(task))
+
+
+if __name__ == "__main__":
+    get_data_api(int(argv[1]))
